@@ -13,7 +13,7 @@ export default function CompanyProfile() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const fetchProfile = () => {
     axios.get(`${API}/api/companies/profile`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setForm({
         name: res.data.name || '',
@@ -21,7 +21,9 @@ export default function CompanyProfile() {
         location: res.data.location || '',
         email: res.data.email || '',
       })).catch(() => {});
-  }, [token]);
+  };
+
+  useEffect(() => { fetchProfile(); }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,6 +32,7 @@ export default function CompanyProfile() {
     try {
       await axios.put(`${API}/api/companies/profile`, form, { headers: { Authorization: `Bearer ${token}` } });
       setMessage('Profile saved successfully!');
+      fetchProfile();
       setTimeout(() => setMessage(''), 3000);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save');

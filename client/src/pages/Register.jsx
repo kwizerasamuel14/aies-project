@@ -6,7 +6,7 @@ import API from '../api';
 const roles = [
   { value: 'student', label: 'Student' },
   { value: 'company', label: 'Company' },
-  { value: 'university', label: 'University' },
+  { value: 'university', label: 'School' },
   { value: 'academic_supervisor', label: 'Academic Supervisor' },
   { value: 'company_supervisor', label: 'Company Supervisor' },
 ];

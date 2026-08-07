@@ -17,19 +17,18 @@ const getProfile = async (req, res) => {
 };
 
 const updateProfile = async (req, res) => {
-  const { department, faculty, skills, portfolio_url, university_id } = req.body;
-  const uniId = university_id && university_id !== '' ? parseInt(university_id) : null;
+  const { department, faculty, skills, portfolio_url } = req.body;
   try {
     const existing = await pool.query('SELECT * FROM students WHERE user_id = $1', [req.user.user_id]);
     if (existing.rows.length === 0) {
       await pool.query(
-        'INSERT INTO students (user_id, department, faculty, skills, portfolio_url, university_id) VALUES ($1,$2,$3,$4,$5,$6)',
-        [req.user.user_id, department, faculty, skills, portfolio_url, uniId]
+        'INSERT INTO students (user_id, department, faculty, skills, portfolio_url) VALUES ($1,$2,$3,$4,$5)',
+        [req.user.user_id, department, faculty, skills, portfolio_url]
       );
     } else {
       await pool.query(
-        'UPDATE students SET department=$1, faculty=$2, skills=$3, portfolio_url=$4, university_id=$5 WHERE user_id=$6',
-        [department, faculty, skills, portfolio_url, uniId, req.user.user_id]
+        'UPDATE students SET department=$1, faculty=$2, skills=$3, portfolio_url=$4 WHERE user_id=$5',
+        [department, faculty, skills, portfolio_url, req.user.user_id]
       );
     }
     res.json({ message: 'Profile updated successfully' });

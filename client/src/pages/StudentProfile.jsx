@@ -8,7 +8,7 @@ export default function StudentProfile() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
-  const [form, setForm] = useState({ department: '', faculty: '', skills: '', portfolio_url: '', university_id: '' });
+  const [form, setForm] = useState({ department: '', faculty: '', skills: '', portfolio_url: '' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,6 @@ export default function StudentProfile() {
         faculty: res.data.faculty || '',
         skills: res.data.skills || '',
         portfolio_url: res.data.portfolio_url || '',
-        university_id: res.data.university_id || '',
       })).catch(() => {});
   }, [token]);
 
@@ -43,8 +42,7 @@ export default function StudentProfile() {
     { label: 'Faculty', key: 'faculty', placeholder: 'e.g. Engineering' },
     { label: 'Department', key: 'department', placeholder: 'e.g. Computer Science' },
     { label: 'Skills', key: 'skills', placeholder: 'e.g. React, Node.js, Python' },
-    { label: 'Portfolio URL', key: 'portfolio_url', placeholder: 'https://yourportfolio.com' },
-    { label: 'University ID', key: 'university_id', placeholder: 'University ID number' },
+    { label: 'Your School', key: 'portfolio_url', placeholder: 'e.g. University of Rwanda' },
   ];
 
   return (
