@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../Navbar';
+import API from '../../api';
 
 const StatCard = ({ label, value, color }) => (
   <div className={`bg-white rounded-xl shadow-sm p-6 border-l-4 ${color}`}>
@@ -23,9 +24,9 @@ export default function CompanySupervisorDashboard({ user }) {
   const [evaluations, setEvaluations] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/applications/accepted', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/applications/accepted`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setInterns(res.data)).catch(() => {});
-    axios.get('http://localhost:5000/api/evaluations/all', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/evaluations/all`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setEvaluations(res.data)).catch(() => {});
   }, [token]);
 

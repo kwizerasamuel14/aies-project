@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../Navbar';
+import API from '../../api';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const COLORS = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#6366f1', '#ec4899'];
@@ -26,9 +27,9 @@ export default function AdminDashboard({ user }) {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/admin/stats', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/admin/stats`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setStats(res.data)).catch(() => {});
-    axios.get('http://localhost:5000/api/admin/users', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/admin/users`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setUsers(res.data)).catch(() => {});
   }, [token]);
 

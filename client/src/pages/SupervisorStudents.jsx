@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import API from '../api';
 
 export default function SupervisorStudents() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -11,7 +12,7 @@ export default function SupervisorStudents() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/evaluations/students', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/evaluations/students`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setStudents(res.data))
       .catch(() => {})
       .finally(() => setLoading(false));

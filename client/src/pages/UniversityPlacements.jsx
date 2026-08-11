@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import API from '../api';
 
 export default function UniversityPlacements() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -11,7 +12,7 @@ export default function UniversityPlacements() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/reports/all', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/reports/all`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => {
         const unique = [...new Map(res.data.map(r => [r.student_id, r])).values()];
         setReports(unique);

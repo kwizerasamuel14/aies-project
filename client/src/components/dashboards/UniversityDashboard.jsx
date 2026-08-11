@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../Navbar';
+import API from '../../api';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const COLORS = ['#3b82f6', '#22c55e', '#ef4444', '#f59e0b'];
@@ -26,9 +27,9 @@ export default function UniversityDashboard({ user }) {
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/reports/all', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/reports/all`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setReports(res.data)).catch(() => {});
-    axios.get('http://localhost:5000/api/admin/stats', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/admin/stats`, { headers: { Authorization: `Bearer ${token}` } })
       .catch(() => {});
   }, [token]);
 

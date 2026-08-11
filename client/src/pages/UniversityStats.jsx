@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import API from '../api';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const COLORS = ['#3b82f6', '#22c55e', '#ef4444', '#f59e0b'];
@@ -16,8 +17,8 @@ export default function UniversityStats() {
 
   useEffect(() => {
     Promise.all([
-      axios.get('http://localhost:5000/api/reports/all', { headers: { Authorization: `Bearer ${token}` } }),
-      axios.get('http://localhost:5000/api/evaluations/all', { headers: { Authorization: `Bearer ${token}` } }),
+      axios.get(`${API}/api/reports/all`, { headers: { Authorization: `Bearer ${token}` } }),
+      axios.get(`${API}/api/evaluations/all`, { headers: { Authorization: `Bearer ${token}` } }),
     ]).then(([r, e]) => { setReports(r.data); setEvaluations(e.data); })
       .catch(() => {})
       .finally(() => setLoading(false));

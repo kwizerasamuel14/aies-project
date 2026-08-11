@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import API from '../api';
 
 export default function SupervisorApprovals() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -12,7 +13,7 @@ export default function SupervisorApprovals() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/applications/accepted', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/applications/accepted`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setApplications(res.data))
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -20,7 +21,7 @@ export default function SupervisorApprovals() {
 
   const markCompleted = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/applications/${id}/status`, { status: 'completed' }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.put(`${API}/api/applications/${id}/status`, { status: 'completed' }, { headers: { Authorization: `Bearer ${token}` } });
       setMessage('Internship marked as completed!');
       setApplications(prev => prev.filter(a => a.application_id !== id));
     } catch (err) {

@@ -2,7 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../Navbar';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import API from '../../api';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const COLORS = ['#3b82f6', '#22c55e', '#ef4444', '#6366f1'];
 
@@ -26,9 +27,9 @@ export default function StudentDashboard({ user }) {
   const [reports, setReports] = useState([]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/applications/my', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/applications/my`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setApplications(res.data)).catch(() => {});
-    axios.get('http://localhost:5000/api/reports/my', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/reports/my`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setReports(res.data)).catch(() => {});
   }, [token]);
 

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import API from '../api';
 
 export default function SupervisorMeetings() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -15,12 +16,12 @@ export default function SupervisorMeetings() {
   const [loading, setLoading] = useState(false);
 
   const fetchMeetings = () => {
-    axios.get('http://localhost:5000/api/meetings/my', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/meetings/my`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setMeetings(res.data)).catch(() => {});
   };
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/evaluations/students', { headers: { Authorization: `Bearer ${token}` } })
+    axios.get(`${API}/api/evaluations/students`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setStudents(res.data)).catch(() => {});
     fetchMeetings();
   }, [token]);
@@ -30,7 +31,7 @@ export default function SupervisorMeetings() {
     setLoading(true);
     setError('');
     try {
-      await axios.post('http://localhost:5000/api/meetings', form, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`${API}/api/meetings`, form, { headers: { Authorization: `Bearer ${token}` } });
       setMessage('Meeting scheduled successfully!');
       setForm({ student_id: '', meeting_date: '', meeting_time: '', notes: '' });
       fetchMeetings();
@@ -43,7 +44,7 @@ export default function SupervisorMeetings() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/meetings/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+    await axios.delete(`${API}/api/meetings/${id}`, { headers: { Authorization: `Bearer ${token}` } });
     fetchMeetings();
   };
 
