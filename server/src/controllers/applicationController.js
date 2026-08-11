@@ -68,15 +68,25 @@ const getApplicants = async (req, res) => {
 
 const getAcceptedApplications = async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT a.*, i.title AS internship_title, u.name AS student_name, u.email AS student_email,
+    const role = req.user.role;
+    let query = `SELECT a.*, i.title AS internship_title, u.name AS student_name, u.email AS student_email,
               s.department, s.faculty, s.skills
        FROM applications a
        JOIN internships i ON a.internship_id = i.internship_id
        JOIN students s ON a.student_id = s.student_id
        JOIN users u ON s.user_id = u.user_id
-       WHERE a.status = 'accepted' ORDER BY a.applied_at DESC`
-    );
+       WHERE a.status = 'accepted'`;
+    const params = [];
+
+    if (role === 'company' || role === 'company_supervisor') {
+      const company = await pool.query('SELECT company_id FROM companies WHERE user_id = $1', [req.user.user_id]);
+      if (company.rows.length === 0) return res.json([]);
+      params.push(company.rows[0].company_id);
+      query += ` AND i.company_id = $${params.length}`;
+    }
+
+    query += ' ORDER BY a.applied_at DESC';
+    const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

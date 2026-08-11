@@ -40,14 +40,28 @@ const getMyReports = async (req, res) => {
 
 const getAllReports = async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT r.*, u.name AS student_name, i.title AS internship_title
+    const role = req.user.role;
+    let query = `SELECT r.*, u.name AS student_name, i.title AS internship_title
        FROM reports r
        JOIN students s ON r.student_id = s.student_id
        JOIN users u ON s.user_id = u.user_id
-       LEFT JOIN internships i ON r.internship_id = i.internship_id
-       ORDER BY r.created_at DESC`
-    );
+       LEFT JOIN internships i ON r.internship_id = i.internship_id`;
+    const params = [];
+
+    if (role === 'university' || role === 'academic_supervisor') {
+      const school = await pool.query('SELECT university_id FROM universities WHERE user_id = $1', [req.user.user_id]);
+      if (school.rows.length > 0) {
+        params.push(school.rows[0].university_id);
+        query += ` WHERE s.university_id = $${params.length}`;
+      } else {
+        query += ' WHERE 1=1';
+      }
+    } else {
+      query += ' WHERE 1=1';
+    }
+
+    query += ' ORDER BY r.created_at DESC';
+    const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

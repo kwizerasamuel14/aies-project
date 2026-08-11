@@ -7,7 +7,7 @@ const roles = [
   { value: 'student', label: 'Student' },
   { value: 'company', label: 'Company' },
   { value: 'university', label: 'School' },
-  { value: 'academic_supervisor', label: 'Academic Supervisor' },
+  { value: 'academic_supervisor', label: 'School Supervisor' },
   { value: 'company_supervisor', label: 'Company Supervisor' },
 ];
 

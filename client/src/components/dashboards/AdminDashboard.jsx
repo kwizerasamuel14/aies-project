@@ -96,6 +96,7 @@ export default function AdminDashboard({ user }) {
           <ActionButton label="🏢 Manage Companies" onClick={() => navigate('/admin/companies')} />
           <ActionButton label="🎓 Manage Universities" onClick={() => navigate('/admin/universities')} />
           <ActionButton label="📌 Internship Categories" onClick={() => navigate('/admin/categories')} />
+          <ActionButton label="📋 Approve Company Posts" onClick={() => navigate('/admin/posts')} />
           <ActionButton label="📊 View Reports" onClick={() => navigate('/admin/reports')} />
           <ActionButton label="⚙️ System Settings" onClick={() => navigate('/admin/settings')} />
         </div>

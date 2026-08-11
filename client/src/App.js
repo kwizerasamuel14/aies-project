@@ -32,6 +32,7 @@ import UniversityStats from './pages/UniversityStats';
 import EditInternship from './pages/EditInternship';
 import AdminCategories from './pages/AdminCategories';
 import AdminSettings from './pages/AdminSettings';
+import AdminPosts from './pages/AdminPosts';
 import NotFound from './pages/NotFound';
 
 const PrivateRoute = ({ children }) => {
@@ -85,6 +86,7 @@ export default function App() {
         <Route path="/university/stats" element={<PrivateRoute><UniversityStats /></PrivateRoute>} />
         <Route path="/admin/categories" element={<PrivateRoute><AdminCategories /></PrivateRoute>} />
         <Route path="/admin/settings" element={<PrivateRoute><AdminSettings /></PrivateRoute>} />
+        <Route path="/admin/posts" element={<PrivateRoute><AdminPosts /></PrivateRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

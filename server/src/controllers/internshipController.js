@@ -1,16 +1,16 @@
 const pool = require('../config/db');
 
 const createInternship = async (req, res) => {
-  const { title, description, required_skills, duration, location, deadline, positions } = req.body;
+  const { title, description, required_skills, duration, location, deadline, positions, post_type } = req.body;
   if (!title || !deadline) return res.status(400).json({ message: 'Title and deadline are required' });
   try {
     const company = await pool.query('SELECT company_id FROM companies WHERE user_id = $1', [req.user.user_id]);
     if (company.rows.length === 0) return res.status(404).json({ message: 'Complete your company profile first' });
 
     const result = await pool.query(
-      `INSERT INTO internships (company_id, title, description, required_skills, duration, location, deadline, positions)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
-      [company.rows[0].company_id, title, description, required_skills, duration, location, deadline, positions || 1]
+      `INSERT INTO internships (company_id, title, description, required_skills, duration, location, deadline, positions, post_type, approval_status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'pending') RETURNING *`,
+      [company.rows[0].company_id, title, description, required_skills, duration, location, deadline, positions || 1, post_type || 'internship']
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -23,7 +23,7 @@ const getInternships = async (req, res) => {
   try {
     let query = `SELECT i.*, c.name AS company_name, c.industry, c.location AS company_location
                  FROM internships i JOIN companies c ON i.company_id = c.company_id
-                 WHERE i.status = 'open'`;
+                 WHERE i.status = 'open' AND i.approval_status = 'approved'`;
     const params = [];
 
     if (search) {
@@ -38,6 +38,31 @@ const getInternships = async (req, res) => {
 
     const result = await pool.query(query, params);
     res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+const getAllPostsForAdmin = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT i.*, c.name AS company_name FROM internships i
+       JOIN companies c ON i.company_id = c.company_id
+       ORDER BY i.created_at DESC`
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+const approvePost = async (req, res) => {
+  const { approval_status } = req.body;
+  const valid = ['approved', 'rejected', 'changes_requested'];
+  if (!valid.includes(approval_status)) return res.status(400).json({ message: 'Invalid approval status' });
+  try {
+    await pool.query('UPDATE internships SET approval_status = $1 WHERE internship_id = $2', [approval_status, req.params.id]);
+    res.json({ message: `Post ${approval_status}` });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
@@ -91,4 +116,4 @@ const updateInternship = async (req, res) => {
   }
 };
 
-module.exports = { createInternship, getInternships, getMyInternships, deleteInternship, updateInternship };
+module.exports = { createInternship, getInternships, getMyInternships, deleteInternship, updateInternship, getAllPostsForAdmin, approvePost };
