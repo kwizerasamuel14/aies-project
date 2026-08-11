@@ -55,10 +55,20 @@ const getAllEvaluations = async (req, res) => {
 
 const getStudentsForEvaluation = async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT s.student_id, u.name, u.email, s.department, s.faculty, s.skills
-       FROM students s JOIN users u ON s.user_id = u.user_id`
-    );
+    const role = req.user.role;
+    let query = `SELECT s.student_id, u.name, u.email, s.department, s.faculty, s.skills
+       FROM students s JOIN users u ON s.user_id = u.user_id`;
+    const params = [];
+
+    if (role === 'university' || role === 'academic_supervisor') {
+      const school = await pool.query('SELECT university_id FROM universities WHERE user_id = $1', [req.user.user_id]);
+      if (school.rows.length > 0) {
+        params.push(school.rows[0].university_id);
+        query += ` WHERE s.university_id = $${params.length}`;
+      }
+    }
+
+    const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
