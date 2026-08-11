@@ -20,7 +20,7 @@ export default function PostInternship() {
     try {
       await axios.post(`${API}/api/internships`, form, { headers: { Authorization: `Bearer ${token}` } });
       setMessage('Post submitted! Waiting for admin approval.');
-      setTimeout(() => navigate('/internships/mine'), 1500);
+      setTimeout(() => navigate('/internships/mine'), 3000);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to post internship');
     } finally {

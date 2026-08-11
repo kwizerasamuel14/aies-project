@@ -50,7 +50,15 @@ export default function MyInternships() {
                 <div key={i.internship_id} className="bg-white rounded-xl shadow-sm p-6 border border-slate-100">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold text-slate-800 text-lg">{i.title}</h3>
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${i.status === 'open' ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}`}>{i.status}</span>
+                    <div className="flex gap-2">
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${i.status === 'open' ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}`}>{i.status}</span>
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        i.approval_status === 'approved' ? 'bg-blue-100 text-blue-600' :
+                        i.approval_status === 'rejected' ? 'bg-red-100 text-red-600' :
+                        i.approval_status === 'changes_requested' ? 'bg-orange-100 text-orange-600' :
+                        'bg-yellow-100 text-yellow-600'
+                      }`}>{i.approval_status === 'changes_requested' ? 'Changes Requested' : i.approval_status || 'pending'}</span>
+                    </div>
                   </div>
                   <p className="text-sm text-slate-500 mb-1">📍 {i.location || 'N/A'} &nbsp;|&nbsp; ⏱ {i.duration || 'N/A'}</p>
                   <p className="text-sm text-slate-500 mb-1">🛠 {i.required_skills || 'N/A'}</p>
