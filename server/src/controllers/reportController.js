@@ -4,6 +4,7 @@ const { createNotification } = require('./notificationController');
 const submitReport = async (req, res) => {
   const { internship_id, week_number, activities, challenges, skills_learned } = req.body;
   if (!week_number || !activities) return res.status(400).json({ message: 'Week number and activities are required' });
+  const internId = internship_id && internship_id !== '' ? parseInt(internship_id) : null;
   try {
     const student = await pool.query('SELECT student_id FROM students WHERE user_id = $1', [req.user.user_id]);
     if (student.rows.length === 0) return res.status(404).json({ message: 'Complete your student profile first' });
@@ -11,7 +12,7 @@ const submitReport = async (req, res) => {
     const result = await pool.query(
       `INSERT INTO reports (student_id, internship_id, week_number, activities, challenges, skills_learned)
        VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-      [student.rows[0].student_id, internship_id, week_number, activities, challenges, skills_learned]
+      [student.rows[0].student_id, internId, week_number, activities, challenges, skills_learned]
     );
     await createNotification(req.user.user_id, `Your Week ${week_number} report has been submitted successfully`, pool);
     res.status(201).json(result.rows[0]);

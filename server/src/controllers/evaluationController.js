@@ -4,11 +4,12 @@ const submitEvaluation = async (req, res) => {
   const { student_id, internship_id, technical_score, professional_score, comments } = req.body;
   if (!student_id || !technical_score || !professional_score)
     return res.status(400).json({ message: 'Student, technical score and professional score are required' });
+  const internId = internship_id && internship_id !== '' ? parseInt(internship_id) : null;
   try {
     const result = await pool.query(
       `INSERT INTO evaluations (student_id, supervisor_id, internship_id, technical_score, professional_score, comments)
        VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-      [student_id, req.user.user_id, internship_id, technical_score, professional_score, comments]
+      [student_id, req.user.user_id, internId, technical_score, professional_score, comments]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
