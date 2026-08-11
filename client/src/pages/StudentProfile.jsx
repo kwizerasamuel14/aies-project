@@ -8,7 +8,8 @@ export default function StudentProfile() {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
-  const [form, setForm] = useState({ department: '', faculty: '', skills: '', portfolio_url: '' });
+  const [form, setForm] = useState({ department: '', faculty: '', skills: '', portfolio_url: '', university_id: '' });
+  const [schools, setSchools] = useState([]);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,7 +21,10 @@ export default function StudentProfile() {
         faculty: res.data.faculty || '',
         skills: res.data.skills || '',
         portfolio_url: res.data.portfolio_url || '',
+        university_id: res.data.university_id || '',
       })).catch(() => {});
+    axios.get(`${API}/api/universities/list`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(res => setSchools(res.data)).catch(() => {});
   }, [token]);
 
   const handleSubmit = async (e) => {
@@ -42,7 +46,7 @@ export default function StudentProfile() {
     { label: 'Faculty', key: 'faculty', placeholder: 'e.g. Engineering' },
     { label: 'Department', key: 'department', placeholder: 'e.g. Computer Science' },
     { label: 'Skills', key: 'skills', placeholder: 'e.g. React, Node.js, Python' },
-    { label: 'Your School', key: 'portfolio_url', placeholder: 'e.g. University of Rwanda' },
+    { label: 'Your School (text)', key: 'portfolio_url', placeholder: 'e.g. University of Rwanda' },
   ];
 
   return (
@@ -64,6 +68,15 @@ export default function StudentProfile() {
                 value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
             </div>
           ))}
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Select Your School</label>
+            <select
+              className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary"
+              value={form.university_id} onChange={(e) => setForm({ ...form, university_id: e.target.value })}>
+              <option value="">-- Select school (optional) --</option>
+              {schools.map(s => <option key={s.university_id} value={s.university_id}>{s.name}</option>)}
+            </select>
+          </div>
           <button type="submit" disabled={loading} className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
             {loading ? 'Saving...' : 'Save Profile'}
           </button>
