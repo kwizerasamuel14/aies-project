@@ -34,7 +34,7 @@ export default function MyInternships() {
       <Navbar user={user} />
       <div className="p-8">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-slate-800">My Internship Posts</h2>
+          <h2 className="text-2xl font-bold text-slate-800">My Posts</h2>
           <button onClick={() => navigate('/internships/create')} className="bg-primary text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
             + Post New
           </button>
@@ -50,16 +50,25 @@ export default function MyInternships() {
                 <div key={i.internship_id} className="bg-white rounded-xl shadow-sm p-6 border border-slate-100">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold text-slate-800 text-lg">{i.title}</h3>
-                    <div className="flex gap-2">
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${i.status === 'open' ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-500'}`}>{i.status}</span>
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        i.approval_status === 'approved' ? 'bg-blue-100 text-blue-600' :
+                    <div className="flex gap-2 flex-wrap justify-end">
+                      <span className="text-xs px-2 py-1 rounded-full font-medium bg-blue-50 text-blue-600 capitalize">{i.post_type || 'internship'}</span>
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${
+                        i.approval_status === 'approved' ? 'bg-green-100 text-green-600' :
                         i.approval_status === 'rejected' ? 'bg-red-100 text-red-600' :
                         i.approval_status === 'changes_requested' ? 'bg-orange-100 text-orange-600' :
                         'bg-yellow-100 text-yellow-600'
                       }`}>{i.approval_status === 'changes_requested' ? 'Changes Requested' : i.approval_status || 'pending'}</span>
                     </div>
                   </div>
+                  {i.admin_comment && (
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
+                      <p className="text-xs font-semibold text-orange-600 mb-1">💬 Admin Comment:</p>
+                      <p className="text-sm text-orange-700">{i.admin_comment}</p>
+                      {i.approval_status === 'changes_requested' && (
+                        <p className="text-xs text-orange-500 mt-1">✏️ Edit your post and resubmit for review.</p>
+                      )}
+                    </div>
+                  )}
                   <p className="text-sm text-slate-500 mb-1">📍 {i.location || 'N/A'} &nbsp;|&nbsp; ⏱ {i.duration || 'N/A'}</p>
                   <p className="text-sm text-slate-500 mb-1">🛠 {i.required_skills || 'N/A'}</p>
                   <p className="text-sm text-slate-500 mb-3">📅 Deadline: {i.deadline ? new Date(i.deadline).toLocaleDateString() : 'N/A'} &nbsp;|&nbsp; 👥 {i.positions} position(s)</p>

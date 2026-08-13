@@ -58,6 +58,9 @@ CREATE TABLE IF NOT EXISTS internships (
   deadline DATE,
   positions INT DEFAULT 1,
   status VARCHAR(20) DEFAULT 'open',
+  post_type VARCHAR(50) DEFAULT 'internship' CHECK (post_type IN ('internship', 'job', 'event', 'announcement', 'other')),
+  approval_status VARCHAR(50) DEFAULT 'pending' CHECK (approval_status IN ('pending', 'approved', 'rejected', 'changes_requested')),
+  admin_comment TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

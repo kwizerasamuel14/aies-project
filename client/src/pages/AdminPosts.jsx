@@ -26,6 +26,7 @@ export default function AdminPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('pending');
+  const [comments, setComments] = useState({});
 
   const fetchPosts = () => {
     axios.get(`${API}/api/internships/admin/all`, { headers: { Authorization: `Bearer ${token}` } })
@@ -37,7 +38,7 @@ export default function AdminPosts() {
   useEffect(() => { fetchPosts(); }, []);
 
   const updateApproval = async (id, approval_status) => {
-    await axios.put(`${API}/api/internships/admin/${id}/approve`, { approval_status }, { headers: { Authorization: `Bearer ${token}` } });
+    await axios.put(`${API}/api/internships/admin/${id}/approve`, { approval_status, admin_comment: comments[id] || '' }, { headers: { Authorization: `Bearer ${token}` } });
     fetchPosts();
   };
 
@@ -79,10 +80,21 @@ export default function AdminPosts() {
                 {p.location && <p className="text-sm text-slate-500 mb-1">📍 {p.location}</p>}
                 {p.deadline && <p className="text-sm text-slate-500 mb-3">📅 Deadline: {new Date(p.deadline).toLocaleDateString()}</p>}
                 {p.approval_status === 'pending' && (
-                  <div className="flex gap-3">
-                    <button onClick={() => updateApproval(p.internship_id, 'approved')} className="flex-1 bg-green-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-green-600 transition">✅ Approve</button>
-                    <button onClick={() => updateApproval(p.internship_id, 'changes_requested')} className="flex-1 bg-orange-400 text-white py-2 rounded-lg text-sm font-semibold hover:bg-orange-500 transition">🔄 Request Changes</button>
-                    <button onClick={() => updateApproval(p.internship_id, 'rejected')} className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition">❌ Reject</button>
+                  <>
+                    <textarea rows={2} placeholder="Add comment (required for reject/changes)..."
+                      className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm mb-3 focus:outline-none focus:border-primary"
+                      value={comments[p.internship_id] || ''}
+                      onChange={(e) => setComments({ ...comments, [p.internship_id]: e.target.value })} />
+                    <div className="flex gap-3">
+                      <button onClick={() => updateApproval(p.internship_id, 'approved')} className="flex-1 bg-green-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-green-600 transition">✅ Approve</button>
+                      <button onClick={() => updateApproval(p.internship_id, 'changes_requested')} className="flex-1 bg-orange-400 text-white py-2 rounded-lg text-sm font-semibold hover:bg-orange-500 transition">🔄 Request Changes</button>
+                      <button onClick={() => updateApproval(p.internship_id, 'rejected')} className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition">❌ Reject</button>
+                    </div>
+                  </>
+                )}
+                {p.admin_comment && (
+                  <div className="mt-3 p-3 bg-orange-50 rounded-lg">
+                    <p className="text-sm text-orange-700"><span className="font-medium">Admin Comment:</span> {p.admin_comment}</p>
                   </div>
                 )}
               </div>

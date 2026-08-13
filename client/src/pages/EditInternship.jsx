@@ -9,7 +9,8 @@ export default function EditInternship() {
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const { id } = useParams();
-  const [form, setForm] = useState({ title: '', description: '', required_skills: '', duration: '', location: '', deadline: '', positions: 1, status: 'open' });
+  const [form, setForm] = useState({ title: '', description: '', required_skills: '', duration: '', location: '', deadline: '', positions: 1, status: 'open', post_type: 'internship' });
+  const [internship, setInternship] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,17 +19,19 @@ export default function EditInternship() {
   useEffect(() => {
     axios.get(`${API}/api/internships/mine`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => {
-        const internship = res.data.find(i => i.internship_id === parseInt(id));
-        if (internship) {
+        const foundInternship = res.data.find(i => i.internship_id === parseInt(id));
+        if (foundInternship) {
+          setInternship(foundInternship);
           setForm({
-            title: internship.title || '',
-            description: internship.description || '',
-            required_skills: internship.required_skills || '',
-            duration: internship.duration || '',
-            location: internship.location || '',
-            deadline: internship.deadline ? internship.deadline.split('T')[0] : '',
-            positions: internship.positions || 1,
-            status: internship.status || 'open',
+            title: foundInternship.title || '',
+            description: foundInternship.description || '',
+            required_skills: foundInternship.required_skills || '',
+            duration: foundInternship.duration || '',
+            location: foundInternship.location || '',
+            deadline: foundInternship.deadline ? foundInternship.deadline.split('T')[0] : '',
+            positions: foundInternship.positions || 1,
+            status: foundInternship.status || 'open',
+            post_type: foundInternship.post_type || 'internship',
           });
         }
       })
@@ -63,7 +66,25 @@ export default function EditInternship() {
         </div>
         {message && <div className="bg-green-50 text-green-600 text-sm p-3 rounded-lg mb-4">{message}</div>}
         {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg mb-4">{error}</div>}
+        {internship && internship.approval_status === 'changes_requested' && internship.admin_comment && (
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+            <p className="text-sm font-semibold text-orange-600 mb-2">💬 Admin's Feedback:</p>
+            <p className="text-sm text-orange-700 mb-3">{internship.admin_comment}</p>
+            <p className="text-xs text-orange-500">✏️ Make the requested changes and save to resubmit for review.</p>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Post Type / Category</label>
+            <select required className="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-primary"
+              value={form.post_type} onChange={(e) => setForm({ ...form, post_type: e.target.value })}>
+              <option value="internship">Academic Internship</option>
+              <option value="job">Job Opportunity</option>
+              <option value="event">Event</option>
+              <option value="announcement">Announcement</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
           {[
             { label: 'Internship Title', key: 'title', required: true },
             { label: 'Location', key: 'location' },

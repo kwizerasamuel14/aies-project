@@ -67,7 +67,10 @@ export default function Internships() {
               <div key={i.internship_id} className="bg-white rounded-xl shadow-sm p-6 border border-slate-100">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-bold text-slate-800 text-lg">{i.title}</h3>
-                  <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full font-medium">Open</span>
+                  <div className="flex gap-2">
+                    <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full font-medium capitalize">{i.post_type || 'internship'}</span>
+                    <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full font-medium">Open</span>
+                  </div>
                 </div>
                 <p className="text-sm font-medium text-primary mb-2">{i.company_name}</p>
                 <p className="text-sm text-slate-500 mb-1">📍 {i.location || 'N/A'} &nbsp;|&nbsp; ⏱ {i.duration || 'N/A'}</p>
