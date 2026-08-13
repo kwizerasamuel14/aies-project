@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-require('./src/config/db');
+const pool = require('./src/config/db');
 
 const authRoutes = require('./src/routes/authRoutes');
 const studentRoutes = require('./src/routes/studentRoutes');
@@ -14,6 +14,53 @@ const evaluationRoutes = require('./src/routes/evaluationRoutes');
 const notificationRoutes = require('./src/routes/notificationRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
 const meetingRoutes = require('./src/routes/meetingRoutes');
+
+// Auto-run migrations on startup
+const runMigrations = async () => {
+  try {
+    console.log('🔄 Running database migrations...');
+    
+    // Check if columns exist
+    const columnCheck = await pool.query(`
+      SELECT column_name FROM information_schema.columns 
+      WHERE table_name = 'internships' AND column_name IN ('post_type', 'approval_status', 'admin_comment')
+    `);
+
+    // Add post_type if missing
+    if (!columnCheck.rows.some(col => col.column_name === 'post_type')) {
+      await pool.query(`
+        ALTER TABLE internships 
+        ADD COLUMN post_type VARCHAR(50) DEFAULT 'internship' 
+        CHECK (post_type IN ('internship', 'job', 'event', 'announcement', 'other'))
+      `);
+      console.log('✅ Added post_type column');
+    }
+
+    // Add approval_status if missing
+    if (!columnCheck.rows.some(col => col.column_name === 'approval_status')) {
+      await pool.query(`
+        ALTER TABLE internships 
+        ADD COLUMN approval_status VARCHAR(50) DEFAULT 'pending' 
+        CHECK (approval_status IN ('pending', 'approved', 'rejected', 'changes_requested'))
+      `);
+      console.log('✅ Added approval_status column');
+    }
+
+    // Add admin_comment if missing
+    if (!columnCheck.rows.some(col => col.column_name === 'admin_comment')) {
+      await pool.query(`
+        ALTER TABLE internships 
+        ADD COLUMN admin_comment TEXT
+      `);
+      console.log('✅ Added admin_comment column');
+    }
+
+    console.log('✅ All migrations completed successfully!');
+  } catch (err) {
+    console.error('⚠️ Migration warning:', err.message);
+    // Don't crash - columns might already exist
+  }
+};
 
 const app = express();
 
@@ -40,4 +87,12 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/meetings', meetingRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+// Run migrations then start server
+(async () => {
+  await runMigrations();
+  app.listen(PORT, () => {
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log('PostgreSQL connected successfully');
+  });
+})();
