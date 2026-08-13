@@ -1,0 +1,456 @@
+{
+  "info": {
+    "name": "AIES - Academic Internship Evaluation System",
+    "description": "Complete API documentation for the AIES project. Import this into Postman to test all endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"student\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/auth/register", "path": ["api", "auth", "register"]}
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/auth/login", "path": ["api", "auth", "login"]}
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/auth/me", "path": ["api", "auth", "me"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Student Profile",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/students/profile", "path": ["api", "students", "profile"]}
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"department\": \"Computer Science\",\n  \"faculty\": \"Engineering\",\n  \"skills\": \"React, Node.js, Python\",\n  \"cv_url\": \"https://example.com/cv.pdf\",\n  \"portfolio_url\": \"https://example.com/portfolio\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/students/profile", "path": ["api", "students", "profile"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Company Profile",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/companies/profile", "path": ["api", "companies", "profile"]}
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tech Company Ltd\",\n  \"email\": \"info@techcompany.com\",\n  \"industry\": \"Software Development\",\n  \"location\": \"Kigali, Rwanda\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/companies/profile", "path": ["api", "companies", "profile"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Internships",
+      "item": [
+        {
+          "name": "Get All Approved Internships",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/internships?search=developer&location=Kigali", "path": ["api", "internships"]}
+          }
+        },
+        {
+          "name": "Post New Internship",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Frontend Developer Intern\",\n  \"description\": \"Work on modern React applications\",\n  \"required_skills\": \"React, JavaScript, CSS\",\n  \"duration\": \"3 months\",\n  \"location\": \"Kigali\",\n  \"deadline\": \"2024-12-31\",\n  \"positions\": 2,\n  \"post_type\": \"internship\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/internships", "path": ["api", "internships"]}
+          }
+        },
+        {
+          "name": "Get My Internships",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/internships/mine", "path": ["api", "internships", "mine"]}
+          }
+        },
+        {
+          "name": "Edit Internship",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Backend Developer Intern\",\n  \"description\": \"Work on Node.js APIs\",\n  \"required_skills\": \"Node.js, Express, PostgreSQL\",\n  \"duration\": \"6 months\",\n  \"location\": \"Kigali\",\n  \"deadline\": \"2025-01-31\",\n  \"positions\": 3,\n  \"status\": \"open\",\n  \"post_type\": \"job\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/internships/123", "path": ["api", "internships", "123"]}
+          }
+        },
+        {
+          "name": "Delete Internship",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/internships/123", "path": ["api", "internships", "123"]}
+          }
+        },
+        {
+          "name": "Get All Posts (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/internships/admin/all", "path": ["api", "internships", "admin", "all"]}
+          }
+        },
+        {
+          "name": "Approve/Reject/Request Changes (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"approval_status\": \"approved\",\n  \"admin_comment\": \"Looks good!\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/internships/admin/123/approve", "path": ["api", "internships", "admin", "123", "approve"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Applications",
+      "item": [
+        {
+          "name": "Apply to Internship",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"internship_id\": 1\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/applications", "path": ["api", "applications"]}
+          }
+        },
+        {
+          "name": "Get My Applications",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/applications/my", "path": ["api", "applications", "my"]}
+          }
+        },
+        {
+          "name": "Get Applicants (Company)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/applications/review", "path": ["api", "applications", "review"]}
+          }
+        },
+        {
+          "name": "Get Accepted Applicants",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/applications/accepted", "path": ["api", "applications", "accepted"]}
+          }
+        },
+        {
+          "name": "Update Application Status",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/applications/123/status", "path": ["api", "applications", "123", "status"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Submit Report",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"internship_id\": 1,\n  \"week_number\": 1,\n  \"activities\": \"Learned React basics\",\n  \"challenges\": \"Understanding hooks\",\n  \"skills_learned\": \"React, JavaScript\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/reports", "path": ["api", "reports"]}
+          }
+        },
+        {
+          "name": "Get My Reports",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/reports/my", "path": ["api", "reports", "my"]}
+          }
+        },
+        {
+          "name": "Get All Reports (Supervisor/Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/reports", "path": ["api", "reports"]}
+          }
+        },
+        {
+          "name": "Approve/Reject Report",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\",\n  \"feedback\": \"Great work!\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/reports/123/review", "path": ["api", "reports", "123", "review"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Evaluations",
+      "item": [
+        {
+          "name": "Submit Evaluation",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": 1,\n  \"internship_id\": 1,\n  \"technical_score\": 4,\n  \"professional_score\": 5,\n  \"comments\": \"Excellent performance\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/evaluations", "path": ["api", "evaluations"]}
+          }
+        },
+        {
+          "name": "Get My Evaluations (Student)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/evaluations/my", "path": ["api", "evaluations", "my"]}
+          }
+        },
+        {
+          "name": "Get All Evaluations (Supervisor/Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/evaluations", "path": ["api", "evaluations"]}
+          }
+        },
+        {
+          "name": "Get Students (Supervisor)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/evaluations/students", "path": ["api", "evaluations", "students"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get My Notifications",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/notifications", "path": ["api", "notifications"]}
+          }
+        },
+        {
+          "name": "Mark Notification as Read",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/notifications/123/read", "path": ["api", "notifications", "123", "read"]}
+          }
+        },
+        {
+          "name": "Mark All as Read",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/notifications/read-all", "path": ["api", "notifications", "read-all"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Meetings",
+      "item": [
+        {
+          "name": "Create Meeting",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": 1,\n  \"meeting_date\": \"2024-12-15\",\n  \"meeting_time\": \"14:30\",\n  \"notes\": \"Monthly check-in\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/meetings", "path": ["api", "meetings"]}
+          }
+        },
+        {
+          "name": "Get My Meetings",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/meetings", "path": ["api", "meetings"]}
+          }
+        },
+        {
+          "name": "Delete Meeting",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/meetings/123", "path": ["api", "meetings", "123"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get System Statistics",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/admin/stats", "path": ["api", "admin", "stats"]}
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/admin/users", "path": ["api", "admin", "users"]}
+          }
+        },
+        {
+          "name": "Suspend User",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"suspended\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/admin/users/123", "path": ["api", "admin", "users", "123"]}
+          }
+        },
+        {
+          "name": "Get All Companies",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/admin/companies", "path": ["api", "admin", "companies"]}
+          }
+        },
+        {
+          "name": "Get All Universities",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/admin/universities", "path": ["api", "admin", "universities"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "University Profile",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}],
+            "url": {"raw": "{{API_URL}}/api/universities/profile", "path": ["api", "universities", "profile"]}
+          }
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Authorization", "value": "Bearer {{TOKEN}}"}, {"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"University of Rwanda\",\n  \"address\": \"Kigali, Rwanda\",\n  \"contact\": \"+250 123 456 789\"\n}"
+            },
+            "url": {"raw": "{{API_URL}}/api/universities/profile", "path": ["api", "universities", "profile"]}
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "API_URL",
+      "value": "https://your-render-backend.onrender.com",
+      "type": "string"
+    },
+    {
+      "key": "TOKEN",
+      "value": "your-jwt-token-here",
+      "type": "string"
+    }
+  ]
+}
