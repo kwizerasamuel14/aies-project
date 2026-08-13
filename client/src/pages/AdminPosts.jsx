@@ -27,19 +27,44 @@ export default function AdminPosts() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('pending');
   const [comments, setComments] = useState({});
+  const [updating, setUpdating] = useState({});
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   const fetchPosts = () => {
     axios.get(`${API}/api/internships/admin/all`, { headers: { Authorization: `Bearer ${token}` } })
       .then(res => setPosts(res.data))
-      .catch(() => {})
+      .catch(() => setError('Failed to load posts'))
       .finally(() => setLoading(false));
   };
 
   useEffect(() => { fetchPosts(); }, []);
 
   const updateApproval = async (id, approval_status) => {
-    await axios.put(`${API}/api/internships/admin/${id}/approve`, { approval_status, admin_comment: comments[id] || '' }, { headers: { Authorization: `Bearer ${token}` } });
-    fetchPosts();
+    if (!comments[id] && approval_status !== 'approved') {
+      setError('Comment required for reject/changes request');
+      return;
+    }
+    
+    setUpdating({ ...updating, [id]: true });
+    setError('');
+    setMessage('');
+    
+    try {
+      await axios.put(`${API}/api/internships/admin/${id}/approve`, 
+        { approval_status, admin_comment: comments[id] || '' }, 
+        { headers: { Authorization: `Bearer ${token}` } });
+      setMessage(`✅ Post ${approval_status.replace('_', ' ')} successfully!`);
+      setTimeout(() => {
+        setMessage('');
+        fetchPosts();
+        setComments({});
+      }, 1500);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update post');
+    } finally {
+      setUpdating({ ...updating, [id]: false });
+    }
   };
 
   const filtered = posts.filter(p => filter === 'all' ? true : p.approval_status === filter);
@@ -52,6 +77,9 @@ export default function AdminPosts() {
           <h2 className="text-2xl font-bold text-slate-800">Company Posts Approval</h2>
           <button onClick={() => navigate('/dashboard')} className="text-sm text-primary hover:underline">← Dashboard</button>
         </div>
+
+        {message && <div className="bg-green-50 text-green-600 text-sm p-3 rounded-lg mb-4">{message}</div>}
+        {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg mb-4">{error}</div>}
 
         <div className="flex gap-3 mb-6">
           {['pending', 'approved', 'rejected', 'all'].map(f => (
@@ -86,9 +114,15 @@ export default function AdminPosts() {
                       value={comments[p.internship_id] || ''}
                       onChange={(e) => setComments({ ...comments, [p.internship_id]: e.target.value })} />
                     <div className="flex gap-3">
-                      <button onClick={() => updateApproval(p.internship_id, 'approved')} className="flex-1 bg-green-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-green-600 transition">✅ Approve</button>
-                      <button onClick={() => updateApproval(p.internship_id, 'changes_requested')} className="flex-1 bg-orange-400 text-white py-2 rounded-lg text-sm font-semibold hover:bg-orange-500 transition">🔄 Request Changes</button>
-                      <button onClick={() => updateApproval(p.internship_id, 'rejected')} className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition">❌ Reject</button>
+                      <button onClick={() => updateApproval(p.internship_id, 'approved')} disabled={updating[p.internship_id]} className="flex-1 bg-green-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        {updating[p.internship_id] ? '⏳ Processing...' : '✅ Approve'}
+                      </button>
+                      <button onClick={() => updateApproval(p.internship_id, 'changes_requested')} disabled={updating[p.internship_id]} className="flex-1 bg-orange-400 text-white py-2 rounded-lg text-sm font-semibold hover:bg-orange-500 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        {updating[p.internship_id] ? '⏳ Processing...' : '🔄 Request Changes'}
+                      </button>
+                      <button onClick={() => updateApproval(p.internship_id, 'rejected')} disabled={updating[p.internship_id]} className="flex-1 bg-red-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-red-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        {updating[p.internship_id] ? '⏳ Processing...' : '❌ Reject'}
+                      </button>
                     </div>
                   </>
                 )}
