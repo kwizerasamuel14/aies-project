@@ -57,24 +57,54 @@ const getAllPostsForAdmin = async (req, res) => {
 };
 
 const approvePost = async (req, res) => {
-  const { approval_status, admin_comment } = req.body;
-  const valid = ['approved', 'rejected', 'changes_requested'];
-  if (!valid.includes(approval_status)) return res.status(400).json({ message: 'Invalid approval status' });
   try {
-    console.log(`Updating post ${req.params.id} to ${approval_status} with comment: ${admin_comment}`);
+    const { approval_status, admin_comment } = req.body;
+    const internshipId = req.params.id;
+    
+    console.log('📥 Received approval request:', {
+      internshipId,
+      approval_status,
+      admin_comment,
+      userId: req.user?.user_id
+    });
+
+    if (!internshipId) {
+      return res.status(400).json({ message: 'Post ID is required' });
+    }
+
+    if (!approval_status) {
+      return res.status(400).json({ message: 'Approval status is required' });
+    }
+
+    const valid = ['approved', 'rejected', 'changes_requested'];
+    if (!valid.includes(approval_status)) {
+      return res.status(400).json({ message: `Invalid approval status. Must be one of: ${valid.join(', ')}` });
+    }
+
+    console.log(`🔄 Updating internship ${internshipId} to ${approval_status}...`);
+    
     const result = await pool.query(
       'UPDATE internships SET approval_status = $1, admin_comment = $2 WHERE internship_id = $3 RETURNING *',
-      [approval_status, admin_comment || null, req.params.id]
+      [approval_status, admin_comment || null, internshipId]
     );
-    console.log(`Update result:`, result.rows);
-    if (result.rows.length === 0) {
+
+    console.log(`✅ Update successful. Rows affected:`, result.rowCount);
+    
+    if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Post not found' });
     }
-    res.json({ message: `Post ${approval_status}`, post: result.rows[0] });
+
+    res.json({ 
+      message: `Post ${approval_status.replace('_', ' ')} successfully`, 
+      post: result.rows[0] 
+    });
   } catch (err) {
-    console.error('❌ Error updating post:', err.message);
-    console.error('Error details:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    console.error('❌ Error in approvePost:', err);
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 };
 
