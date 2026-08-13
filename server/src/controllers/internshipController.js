@@ -61,12 +61,19 @@ const approvePost = async (req, res) => {
   const valid = ['approved', 'rejected', 'changes_requested'];
   if (!valid.includes(approval_status)) return res.status(400).json({ message: 'Invalid approval status' });
   try {
-    await pool.query(
-      'UPDATE internships SET approval_status = $1, admin_comment = $2 WHERE internship_id = $3',
+    console.log(`Updating post ${req.params.id} to ${approval_status} with comment: ${admin_comment}`);
+    const result = await pool.query(
+      'UPDATE internships SET approval_status = $1, admin_comment = $2 WHERE internship_id = $3 RETURNING *',
       [approval_status, admin_comment || null, req.params.id]
     );
-    res.json({ message: `Post ${approval_status}` });
+    console.log(`Update result:`, result.rows);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    res.json({ message: `Post ${approval_status}`, post: result.rows[0] });
   } catch (err) {
+    console.error('❌ Error updating post:', err.message);
+    console.error('Error details:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
