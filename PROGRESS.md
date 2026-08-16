@@ -3,81 +3,55 @@
 
 ## Project Info
 - **Stack:** React.js + Tailwind CSS (Frontend) | Node.js + Express (Backend) | PostgreSQL (Database)
-- **Repo:** https://github.com/UpSkillHub
-- **Working Directory:** C:\Users\ADMIN\Desktop\Internship\aies
+- **Repository:** https://github.com/kwizerasamuel14/aies-project.git (Up Skills Hub)
+- **Deployments:** Render (Backend API + PostgreSQL) | Netlify (Frontend SPA)
+- **Working Directory:** `C:\Users\ADMIN\Desktop\Internship\aies`
 
 ---
 
-## ✅ Completed — FULLY FINISHED
-
-### Backend
-- [x] Project folder structure (`aies/client`, `aies/server`)
-- [x] Node.js + PostgreSQL + all dependencies installed
-- [x] Database `aies_db` with all tables: users, students, companies, universities, internships, applications, reports, evaluations, notifications, meetings
-- [x] Auth API: register, login, getMe (JWT + bcrypt)
-- [x] Student profile API: GET/PUT /api/students/profile
-- [x] Company profile API: GET/PUT /api/companies/profile
-- [x] University profile API: GET/PUT /api/universities/profile
-- [x] Internship API: POST, GET (search+filter), GET /mine, PUT /:id (edit), DELETE
-- [x] Application API: apply, my applications, review applicants, accepted (for supervisors), accept/reject/complete
-- [x] Reports API: submit, my reports, all reports, approve/reject + feedback
-- [x] Evaluations API: submit, my evaluations, all evaluations, list students
-- [x] Notifications API: get, mark read, mark all read (auto-triggered on key events)
-- [x] Admin API: stats, users (suspend/delete), companies, universities
-- [x] Meetings API: create, get my meetings, delete (DB-backed, not localStorage)
-
-### Bug Fixes Applied
-- [x] Notification "mark all read" route order fixed (was shadowed by /:id/read)
-- [x] Supervisors can now mark applications as completed (role check fixed)
-- [x] University role can access /api/admin/stats and /api/admin/users
-- [x] University role can access /api/evaluations/students
-- [x] New GET /api/applications/accepted endpoint for supervisors
-- [x] applicationController handles supervisor role without requiring company record
-
-### Frontend
-- [x] Login, Register pages
-- [x] Dashboard — auto-renders role-specific dashboard for all 6 roles
-- [x] Shared Navbar with notification bell + unread badge (on ALL pages)
-- [x] StudentProfile, CompanyProfile, UniversityProfile pages (with real Navbar)
-- [x] Role-specific dashboards: Student, Company, University, Academic Supervisor, Company Supervisor, Admin
-- [x] All dashboards show real data (no hardcoded zeros)
-- [x] Internships page (browse, search, filter)
-- [x] PostInternship, MyInternships pages (Company) — MyInternships shows applicant counts + Edit button
-- [x] EditInternship page (Company — edit title, skills, deadline, status, etc.)
-- [x] ApplyInternship, MyApplications pages (Student)
-- [x] ReviewApplicants page (Company — accept/reject)
-- [x] SubmitReport, MyReports pages (Student)
-- [x] ReviewReports page (Supervisor/University/Admin)
-- [x] SubmitEvaluation page (Supervisor — rating 1-5 with labels)
-- [x] MyEvaluations page (Student)
-- [x] Notifications page (mark read / mark all read)
-- [x] AdminUsers page (suspend, activate, delete)
-- [x] AdminCompanies page
-- [x] AdminUniversities page
-- [x] AdminStats page (system-wide statistics)
-- [x] SupervisorStudents page (list all students with View Reports + Evaluate buttons)
-- [x] SupervisorApprovals page (mark accepted internships as completed)
-- [x] SupervisorMeetings page (schedule/delete meetings — DB-backed)
-- [x] CurrentInterns page (accepted applicants with Evaluate button)
-- [x] UniversityStudents page (table of all registered students)
-- [x] UniversityPlacements page (students with active internships)
-- [x] UniversitySupervisors page (table of all supervisors)
-- [x] UniversityStats page (charts + avg scores)
-- [x] AdminCategories page (add/delete internship categories)
-- [x] AdminSettings page (site name, registration toggle, deadlines)
-- [x] 404 NotFound page (catch-all for unknown routes)
+## 👥 Core System Roles (Consolidated to 4 Roles)
+1. **Student (`student`)**: Search & apply to internships, submit weekly logbooks/reports, view performance evaluations.
+2. **School (`university`)**: Unified School and Academic Supervisor hub (manage enrolled students, review weekly reports with feedback, submit evaluations, schedule meetings, approve completion, view school stats & placements).
+3. **Company (`company`)**: Unified Company and Company Supervisor hub (post & edit internships/jobs, review applicants, manage current interns, submit intern evaluations, approve completion).
+4. **Admin (`admin`)**: Post approval moderation, expired post deletion & archiving, user management, statistics & settings.
 
 ---
 
-## 📌 Decisions Made
-- Database: PostgreSQL (port 5432)
-- Auth: JWT tokens (7 days expiry), email + password login
-- Styling: Tailwind CSS v3
-- DB Password: ubuntu1000
-- DB Name: aies_db
-- DB User: postgres
-- Meetings: Stored in DB (meetings table), not localStorage
-- Categories/Settings: Stored in localStorage (admin-only, no DB needed)
+## ✅ Completed & Implemented Features
+
+### 1. Company Post Moderation & Approval (Supervisor Requirement #1)
+- [x] Admin can view **Duration** and **Number of Applicants** on each post before making approval decisions.
+- [x] Clear display of positions, deadline, and required skills.
+- [x] Post status badges: `pending`, `approved`, `changes_requested`, `rejected`, and `⚠️ Expired`.
+- [x] Admin feedback comment required when requesting changes or rejecting.
+- [x] **Expired Post Deletion & Redirection:**
+  - Auto-detection of expired posts past deadline.
+  - Admin button to delete expired posts.
+  - Soft-delete database tracking (`is_deleted`, `deletion_reason`, `deleted_at`).
+  - Automatically redirects/switches to the **Expired Posts** tab upon deletion.
+  - Archived posts display deletion timestamp, reason, company, applicants count, and duration.
+
+### 2. Company Intern Evaluation Flow (Supervisor Requirement #2)
+- [x] **Current Interns Display:** `GET /api/evaluations/students` returns active interns (students with accepted applications) for the logged-in company.
+- [x] **Populated Dropdown:** `-- Select a student --` / `-- Select an active intern --` dropdown lists all current interns with name, internship title, and department.
+- [x] Auto-linking `internship_id` and student data upon selection.
+- [x] Quick-action **"⭐ Evaluate"** button from Current Interns page pre-selects the student in the evaluation form.
+- [x] Helpful empty-state guidance banner if no applicants have been accepted yet.
+- [x] Role permissions granted for `company` on evaluation submission and student retrieval endpoints.
+
+### 3. Role Consolidation (Supervisor Requirement #3)
+- [x] Consolidated role hierarchy strictly to the 4 core roles: **Student**, **School**, **Company**, and **Admin**.
+- [x] **Registration Form (`Register.jsx`)**: Displays only the 4 selectable roles.
+- [x] **School Dashboard (`UniversityDashboard.jsx`)**: Unified hub incorporating report review, student evaluations, meeting scheduling, and placement tracking.
+- [x] **Company Dashboard (`CompanyDashboard.jsx`)**: Unified hub incorporating job posting, applicant review, intern management, and evaluations.
+- [x] **Admin Dashboard & Users (`AdminDashboard.jsx`, `AdminUsers.jsx`)**: Role charts and tables cleanly display the 4 roles with "School" for universities.
+- [x] **Backend API Routes**: Unified permissions across `meetingRoutes.js`, `evaluationRoutes.js`, `reportRoutes.js`, and `applicationRoutes.js`.
+
+### 4. Deployment & Infrastructure
+- [x] Netlify SPA routing support via `client/public/_redirects` (`/* /index.html 200`).
+- [x] Render PostgreSQL SSL connection configuration in `src/config/db.js`.
+- [x] Auto-migrations running on server startup for all tables and dynamic columns.
+- [x] Full API documentation (`API_DOCUMENTATION.md`) and Postman collection (`AIES_API_Postman_Collection.json`).
 
 ---
 
@@ -85,6 +59,8 @@
 ```
 aies/
 ├── client/
+│   ├── public/
+│   │   └── _redirects
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── Navbar.jsx
@@ -92,42 +68,37 @@ aies/
 │   │   │       ├── StudentDashboard.jsx
 │   │   │       ├── CompanyDashboard.jsx
 │   │   │       ├── UniversityDashboard.jsx
-│   │   │       ├── AcademicSupervisorDashboard.jsx
-│   │   │       ├── CompanySupervisorDashboard.jsx
 │   │   │       └── AdminDashboard.jsx
-│   │   ├── pages/  (33 pages total)
+│   │   ├── pages/  (Admin, University, Company, Student pages)
 │   │   ├── App.js
+│   │   ├── api.js
 │   │   └── index.css
-│   └── tailwind.config.js
+│   └── package.json
 ├── server/
 │   ├── src/
 │   │   ├── config/
 │   │   │   ├── db.js
 │   │   │   ├── schema.sql
 │   │   │   └── migrate.js
-│   │   ├── controllers/  (11 controllers)
+│   │   ├── controllers/
 │   │   ├── middleware/
 │   │   │   └── auth.js
-│   │   └── routes/  (11 route files)
+│   │   └── routes/
 │   ├── index.js
-│   └── .env
+│   └── package.json
 └── PROGRESS.md
 ```
 
 ---
 
-## ▶️ How to Run
-**Terminal 1 - Backend:**
-```
-cd C:\Users\ADMIN\Desktop\Internship\aies\server
+## ▶️ How to Run Locally
+**Backend Server (Port 5000):**
+```powershell
+cd aies\server
 node index.js
 ```
-**Terminal 2 - Frontend:**
-```
-cd C:\Users\ADMIN\Desktop\Internship\aies\client
+**Frontend Client (Port 3000):**
+```powershell
+cd aies\client
 npm start
 ```
-
-## 🌐 URLs
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
