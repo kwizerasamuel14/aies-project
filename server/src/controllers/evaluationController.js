@@ -60,25 +60,18 @@ const getStudentsForEvaluation = async (req, res) => {
 
     if (role === 'company' || role === 'company_supervisor') {
       const company = await pool.query('SELECT company_id FROM companies WHERE user_id = $1', [userId]);
+      if (company.rows.length === 0) return res.json([]);
 
-      let query = `
+      const result = await pool.query(`
         SELECT DISTINCT s.student_id, u.name, u.email, s.department, s.faculty, s.skills,
                i.internship_id, i.title AS internship_title
         FROM applications a
         JOIN internships i ON a.internship_id = i.internship_id
         JOIN students s ON a.student_id = s.student_id
         JOIN users u ON s.user_id = u.user_id
-        WHERE a.status = 'accepted'
-      `;
-      const params = [];
-
-      if (company.rows.length > 0) {
-        params.push(company.rows[0].company_id);
-        query += ` AND i.company_id = ${params.length}`;
-      }
-
-      query += ` ORDER BY u.name ASC`;
-      const result = await pool.query(query, params);
+        WHERE a.status = 'accepted' AND i.company_id = $1
+        ORDER BY u.name ASC
+      `, [company.rows[0].company_id]);
       return res.json(result.rows);
     }
 

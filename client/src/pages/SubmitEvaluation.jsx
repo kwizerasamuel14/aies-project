@@ -40,7 +40,7 @@ export default function SubmitEvaluation() {
           }
         }
       })
-      .catch(() => setError('Failed to load interns'))
+      .catch((err) => setError(err.response?.data?.message || 'Failed to load interns'))
       .finally(() => setFetching(false));
   }, [token, location.state]);
 
