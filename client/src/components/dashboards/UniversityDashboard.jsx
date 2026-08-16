@@ -47,7 +47,7 @@ export default function UniversityDashboard({ user }) {
     <div className="min-h-screen bg-slate-50">
       <Navbar user={user} />
       <div className="p-8">
-        <h2 className="text-2xl font-bold text-slate-800 mb-6">University Dashboard</h2>
+        <h2 className="text-2xl font-bold text-slate-800 mb-6">School Dashboard</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <StatCard label="Total Reports" value={reports.length} color="border-primary" />
@@ -87,13 +87,15 @@ export default function UniversityDashboard({ user }) {
         </div>
 
         <h3 className="text-lg font-semibold text-slate-700 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <ActionButton label="📋 Complete University Profile" onClick={() => navigate('/profile/university')} />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <ActionButton label="🎓 Manage Students" onClick={() => navigate('/university/students')} />
-          <ActionButton label="✅ Approve Placements" onClick={() => navigate('/university/placements')} />
-          <ActionButton label="👨🏫 Assign Supervisors" onClick={() => navigate('/university/supervisors')} />
-          <ActionButton label="📝 Review Reports" onClick={() => navigate('/university/reports')} />
-          <ActionButton label="📊 Generate Statistics" onClick={() => navigate('/university/stats')} />
+          <ActionButton label="📝 Review Weekly Reports" onClick={() => navigate('/university/reports')} />
+          <ActionButton label="⭐ Evaluate Students" onClick={() => navigate('/evaluations/submit')} />
+          <ActionButton label="📅 Schedule Meetings" onClick={() => navigate('/supervisor/meetings')} />
+          <ActionButton label="✅ Approve Internship Completion" onClick={() => navigate('/supervisor/approvals')} />
+          <ActionButton label="💼 View Placements" onClick={() => navigate('/university/placements')} />
+          <ActionButton label="📊 School Statistics" onClick={() => navigate('/university/stats')} />
+          <ActionButton label="📋 School Profile" onClick={() => navigate('/profile/university')} />
         </div>
       </div>
     </div>

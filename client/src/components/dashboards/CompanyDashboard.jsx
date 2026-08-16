@@ -88,13 +88,14 @@ export default function CompanyDashboard({ user }) {
         </div>
 
         <h3 className="text-lg font-semibold text-slate-700 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <ActionButton label="📋 Complete Company Profile" onClick={() => navigate('/profile/company')} />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <ActionButton label="➕ Post Internship" onClick={() => navigate('/internships/create')} />
           <ActionButton label="📌 My Internship Posts" onClick={() => navigate('/internships/mine')} />
           <ActionButton label="👥 Review Applicants" onClick={() => navigate('/applications/review')} />
           <ActionButton label="🧑‍💼 Current Interns" onClick={() => navigate('/interns')} />
-          <ActionButton label="⭐ Submit Evaluation" onClick={() => navigate('/evaluations/submit')} />
+          <ActionButton label="⭐ Submit Intern Evaluation" onClick={() => navigate('/evaluations/submit')} />
+          <ActionButton label="✅ Approve Completion" onClick={() => navigate('/supervisor/approvals')} />
+          <ActionButton label="📋 Company Profile" onClick={() => navigate('/profile/company')} />
         </div>
       </div>
     </div>

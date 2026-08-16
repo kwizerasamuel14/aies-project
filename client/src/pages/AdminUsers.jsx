@@ -60,7 +60,7 @@ export default function AdminUsers() {
                   <tr key={u.user_id} className="hover:bg-slate-50">
                     <td className="px-6 py-4 font-medium text-slate-800">{u.name}</td>
                     <td className="px-6 py-4 text-slate-500">{u.email}</td>
-                    <td className="px-6 py-4 capitalize text-slate-600">{u.role?.replace(/_/g, ' ')}</td>
+                    <td className="px-6 py-4 capitalize text-slate-600">{u.role === 'university' ? 'School' : u.role?.replace(/_/g, ' ')}</td>
                     <td className="px-6 py-4">
                       <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize ${statusColors[u.status]}`}>{u.status}</span>
                     </td>

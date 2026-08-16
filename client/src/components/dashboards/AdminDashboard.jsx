@@ -33,10 +33,22 @@ export default function AdminDashboard({ user }) {
       .then(res => setUsers(res.data)).catch(() => {});
   }, [token]);
 
-  const roleData = ['student', 'company', 'university', 'academic_supervisor', 'company_supervisor', 'admin'].map(role => ({
-    name: role.replace(/_/g, ' '),
-    count: users.filter(u => u.role === role).length,
-  })).filter(d => d.count > 0);
+  const roleData = [
+    { role: 'student', label: 'Student' },
+    { role: 'university', label: 'School' },
+    { role: 'company', label: 'Company' },
+    { role: 'admin', label: 'Admin' },
+  ].map(({ role, label }) => {
+    let count = 0;
+    if (role === 'university') {
+      count = users.filter(u => u.role === 'university' || u.role === 'academic_supervisor').length;
+    } else if (role === 'company') {
+      count = users.filter(u => u.role === 'company' || u.role === 'company_supervisor').length;
+    } else {
+      count = users.filter(u => u.role === role).length;
+    }
+    return { name: label, count };
+  }).filter(d => d.count > 0);
 
   const systemData = stats ? [
     { name: 'Users', value: parseInt(stats.total_users) },

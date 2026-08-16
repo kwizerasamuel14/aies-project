@@ -9,8 +9,8 @@ const dashboards = {
   student: StudentDashboard,
   company: CompanyDashboard,
   university: UniversityDashboard,
-  academic_supervisor: AcademicSupervisorDashboard,
-  company_supervisor: CompanySupervisorDashboard,
+  academic_supervisor: UniversityDashboard,
+  company_supervisor: CompanyDashboard,
   admin: AdminDashboard,
 };
 

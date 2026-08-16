@@ -27,7 +27,9 @@ export default function Navbar({ user }) {
           )}
         </button>
         <span className="text-sm text-slate-600">Welcome, <strong>{user.name}</strong></span>
-        <span className="bg-blue-100 text-primary text-xs px-3 py-1 rounded-full font-medium capitalize">{user.role?.replace(/_/g, ' ')}</span>
+        <span className="bg-blue-100 text-primary text-xs px-3 py-1 rounded-full font-medium capitalize">
+          {user.role === 'university' ? 'School' : user.role?.replace(/_/g, ' ')}
+        </span>
         <button onClick={logout} className="text-sm text-red-500 hover:text-red-700">Logout</button>
       </div>
     </nav>
