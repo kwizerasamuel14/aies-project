@@ -23,16 +23,16 @@ const getInternships = async (req, res) => {
   try {
     let query = `SELECT i.*, c.name AS company_name, c.industry, c.location AS company_location
                  FROM internships i JOIN companies c ON i.company_id = c.company_id
-                 WHERE i.status = 'open' AND i.approval_status = 'approved'`;
+                 WHERE i.status = 'open' AND i.approval_status = 'approved' AND (i.is_deleted IS FALSE OR i.is_deleted IS NULL)`;
     const params = [];
 
     if (search) {
       params.push(`%${search}%`);
-      query += ` AND (i.title ILIKE $${params.length} OR i.required_skills ILIKE $${params.length})`;
+      query += ` AND (i.title ILIKE ${params.length} OR i.required_skills ILIKE ${params.length})`;
     }
     if (location) {
       params.push(`%${location}%`);
-      query += ` AND i.location ILIKE $${params.length}`;
+      query += ` AND i.location ILIKE ${params.length}`;
     }
     query += ' ORDER BY i.created_at DESC';
 
@@ -46,7 +46,9 @@ const getInternships = async (req, res) => {
 const getAllPostsForAdmin = async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT i.*, c.name AS company_name FROM internships i
+      `SELECT i.*, c.name AS company_name,
+              (SELECT COUNT(*) FROM applications a WHERE a.internship_id = i.internship_id)::int AS applicant_count
+       FROM internships i
        JOIN companies c ON i.company_id = c.company_id
        ORDER BY i.created_at DESC`
     );
@@ -60,7 +62,7 @@ const approvePost = async (req, res) => {
   try {
     const { approval_status, admin_comment } = req.body;
     const internshipId = req.params.id;
-    
+
     console.log('📥 Received approval request:', {
       internshipId,
       approval_status,
@@ -82,26 +84,26 @@ const approvePost = async (req, res) => {
     }
 
     console.log(`🔄 Updating internship ${internshipId} to ${approval_status}...`);
-    
+
     const result = await pool.query(
       'UPDATE internships SET approval_status = $1, admin_comment = $2 WHERE internship_id = $3 RETURNING *',
       [approval_status, admin_comment || null, internshipId]
     );
 
     console.log(`✅ Update successful. Rows affected:`, result.rowCount);
-    
+
     if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    res.json({ 
-      message: `Post ${approval_status.replace('_', ' ')} successfully`, 
-      post: result.rows[0] 
+    res.json({
+      message: `Post ${approval_status.replace('_', ' ')} successfully`,
+      post: result.rows[0]
     });
   } catch (err) {
     console.error('❌ Error in approvePost:', err);
-    res.status(500).json({ 
-      message: 'Server error', 
+    res.status(500).json({
+      message: 'Server error',
       error: err.message,
       stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
     });
@@ -156,4 +158,39 @@ const updateInternship = async (req, res) => {
   }
 };
 
-module.exports = { createInternship, getInternships, getMyInternships, deleteInternship, updateInternship, getAllPostsForAdmin, approvePost };
+const adminDeletePost = async (req, res) => {
+  try {
+    const internshipId = req.params.id;
+    const { reason } = req.body || {};
+
+    if (!internshipId) {
+      return res.status(400).json({ message: 'Post ID is required' });
+    }
+
+    const existing = await pool.query('SELECT * FROM internships WHERE internship_id = $1', [internshipId]);
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    const result = await pool.query(
+      `UPDATE internships
+       SET is_deleted = TRUE,
+           deletion_reason = $1,
+           deleted_at = CURRENT_TIMESTAMP,
+           status = 'closed'
+       WHERE internship_id = $2
+       RETURNING *`,
+      [reason || 'expired', internshipId]
+    );
+
+    res.json({
+      message: 'Post deleted successfully and moved to expired posts',
+      post: result.rows[0]
+    });
+  } catch (err) {
+    console.error('❌ Error in adminDeletePost:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+module.exports = { createInternship, getInternships, getMyInternships, deleteInternship, updateInternship, getAllPostsForAdmin, approvePost, adminDeletePost };

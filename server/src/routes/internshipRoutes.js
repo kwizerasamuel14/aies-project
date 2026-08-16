@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { createInternship, getInternships, getMyInternships, deleteInternship, updateInternship, getAllPostsForAdmin, approvePost } = require('../controllers/internshipController');
+const { createInternship, getInternships, getMyInternships, deleteInternship, updateInternship, getAllPostsForAdmin, approvePost, adminDeletePost } = require('../controllers/internshipController');
 const { authMiddleware, roleMiddleware } = require('../middleware/auth');
 
 // More specific routes first
 router.get('/mine', authMiddleware, roleMiddleware('company'), getMyInternships);
 router.get('/admin/all', authMiddleware, roleMiddleware('admin'), getAllPostsForAdmin);
 router.put('/admin/:id/approve', authMiddleware, roleMiddleware('admin'), approvePost);
+router.delete('/admin/:id', authMiddleware, roleMiddleware('admin'), adminDeletePost);
 
 // Generic routes last
 router.get('/', authMiddleware, getInternships);
