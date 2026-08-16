@@ -38,7 +38,7 @@ export default function SupervisorStudents() {
                 <p className="text-sm text-slate-500">🛠 {s.skills || 'N/A'}</p>
                 <div className="flex gap-3 mt-4">
                   <button onClick={() => navigate('/supervisor/reports')} className="flex-1 bg-primary text-white py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">View Reports</button>
-                  <button onClick={() => navigate('/supervisor/evaluations')} className="flex-1 bg-indigo-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-600 transition">Evaluate</button>
+                  <button onClick={() => navigate('/evaluations/submit', { state: { student_id: s.student_id, internship_id: s.internship_id } })} className="flex-1 bg-indigo-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-600 transition">Evaluate</button>
                 </div>
               </div>
             ))}

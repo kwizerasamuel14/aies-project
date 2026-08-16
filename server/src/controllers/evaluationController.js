@@ -56,21 +56,67 @@ const getAllEvaluations = async (req, res) => {
 const getStudentsForEvaluation = async (req, res) => {
   try {
     const role = req.user.role;
-    let query = `SELECT s.student_id, u.name, u.email, s.department, s.faculty, s.skills
-       FROM students s JOIN users u ON s.user_id = u.user_id`;
-    const params = [];
+    const userId = req.user.user_id;
 
-    if (role === 'university' || role === 'academic_supervisor') {
-      const school = await pool.query('SELECT university_id FROM universities WHERE user_id = $1', [req.user.user_id]);
-      if (school.rows.length > 0) {
-        params.push(school.rows[0].university_id);
-        query += ` WHERE s.university_id = $${params.length}`;
+    if (role === 'company' || role === 'company_supervisor') {
+      const company = await pool.query('SELECT company_id FROM companies WHERE user_id = $1', [userId]);
+
+      let query = `
+        SELECT DISTINCT s.student_id, u.name, u.email, s.department, s.faculty, s.skills,
+               i.internship_id, i.title AS internship_title
+        FROM applications a
+        JOIN internships i ON a.internship_id = i.internship_id
+        JOIN students s ON a.student_id = s.student_id
+        JOIN users u ON s.user_id = u.user_id
+        WHERE a.status = 'accepted'
+      `;
+      const params = [];
+
+      if (company.rows.length > 0) {
+        params.push(company.rows[0].company_id);
+        query += ` AND i.company_id = ${params.length}`;
       }
+
+      query += ` ORDER BY u.name ASC`;
+      const result = await pool.query(query, params);
+      return res.json(result.rows);
     }
 
-    const result = await pool.query(query, params);
+    if (role === 'university' || role === 'academic_supervisor') {
+      const school = await pool.query('SELECT university_id FROM universities WHERE user_id = $1', [userId]);
+      let query = `
+        SELECT DISTINCT s.student_id, u.name, u.email, s.department, s.faculty, s.skills,
+               i.internship_id, i.title AS internship_title
+        FROM students s
+        JOIN users u ON s.user_id = u.user_id
+        LEFT JOIN applications a ON s.student_id = a.student_id AND a.status = 'accepted'
+        LEFT JOIN internships i ON a.internship_id = i.internship_id
+      `;
+      const params = [];
+
+      if (school.rows.length > 0) {
+        params.push(school.rows[0].university_id);
+        query += ` WHERE s.university_id = ${params.length}`;
+      }
+
+      query += ` ORDER BY u.name ASC`;
+      const result = await pool.query(query, params);
+      return res.json(result.rows);
+    }
+
+    // Default / Admin: return all students
+    const result = await pool.query(`
+      SELECT DISTINCT s.student_id, u.name, u.email, s.department, s.faculty, s.skills,
+             i.internship_id, i.title AS internship_title
+      FROM students s
+      JOIN users u ON s.user_id = u.user_id
+      LEFT JOIN applications a ON s.student_id = a.student_id AND a.status = 'accepted'
+      LEFT JOIN internships i ON a.internship_id = i.internship_id
+      ORDER BY u.name ASC
+    `);
     res.json(result.rows);
   } catch (err) {
+    console.error('❌ Error in getStudentsForEvaluation:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };

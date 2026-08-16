@@ -40,7 +40,7 @@ export default function CurrentInterns() {
                 <p className="text-sm text-slate-500 mb-1">✉️ {a.student_email}</p>
                 <p className="text-sm text-slate-500 mb-1">🎓 {a.faculty || 'N/A'} — {a.department || 'N/A'}</p>
                 <p className="text-sm text-slate-500 mb-4">🛠 {a.skills || 'N/A'}</p>
-                <button onClick={() => navigate('/evaluations/submit')} className="w-full bg-primary text-white py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
+                <button onClick={() => navigate('/evaluations/submit', { state: { student_id: a.student_id, internship_id: a.internship_id } })} className="w-full bg-primary text-white py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
                   ⭐ Evaluate
                 </button>
               </div>
